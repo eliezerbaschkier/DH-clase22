@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-
 const productsFilePath = path.join(__dirname, '../data/productsDataBase.json');
 
 const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -29,20 +28,24 @@ const controller = {
 	
 	// Create -  Method to store
 	store: (req, res) => {
-		let products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
-		let newProduct = {
-			id: (products.length + 1),
-			name: req.body.name,
-			price: req.body.price,
-			discount: req.body.discount,
-			category: req.body.category,
-			description: req.body.description,
-			image: ""
-		};
-		products.push(newProduct);
-		let productsJSON = JSON.stringify(products);
-		fs.writeFileSync(productsFilePath, productsJSON);
-		res.redirect('/products'); 
+		if (req.file) {
+			let products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
+			let newProduct = {
+				id: (products.length + 1),
+				name: req.body.name,
+				price: req.body.price,
+				discount: req.body.discount,
+				category: req.body.category,
+				description: req.body.description,
+				image: req.file.filename
+			};
+			products.push(newProduct);
+			let productsJSON = JSON.stringify(products);
+			fs.writeFileSync(productsFilePath, productsJSON);
+			res.redirect('/products'); 
+		} else {
+			res.render('product-create-form');
+		}
 	},
 
 	// Update - Form to edit
