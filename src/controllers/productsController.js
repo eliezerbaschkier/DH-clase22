@@ -2,13 +2,13 @@ const fs = require('fs');
 const path = require('path');
 
 const productsFilePath = path.join(__dirname, '../data/productsDataBase.json');
-const products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 
 const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 const controller = {
 	// Root - Show all products
 	index: (req, res) => {
+		let products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 		res.render('products', {products: products,
 		toThousand: toThousand})
 	},
@@ -16,6 +16,7 @@ const controller = {
 	// Detail - Detail from one product    
 	detail: (req, res) => {
 		let idProduct = parseInt(req.params.id);
+		let products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 		let product = products.filter(i => i.id === idProduct);
 		res.render('detail', {product: product,
 			toThousand: toThousand}); 
@@ -28,6 +29,7 @@ const controller = {
 	
 	// Create -  Method to store
 	store: (req, res) => {
+		let products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 		let newProduct = {
 			id: (products.length + 1),
 			name: req.body.name,
@@ -40,12 +42,13 @@ const controller = {
 		products.push(newProduct);
 		let productsJSON = JSON.stringify(products);
 		fs.writeFileSync(productsFilePath, productsJSON);
-		res.redirect('/products'); //VER POR QUÉ NO CARGA LA PÁGINA
+		res.redirect('/products'); 
 	},
 
 	// Update - Form to edit
 	edit: (req, res) => {
 		let idProduct = parseInt(req.params.id);
+		let products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 		let productToEdit = products.filter(i => i.id === idProduct);
 		res.render('product-edit-form', {productToEdit: productToEdit,
 			toThousand: toThousand}); 
@@ -53,6 +56,7 @@ const controller = {
 	// Update - Method to update
 	update: (req, res) => {
 		let idProduct = parseInt(req.params.id);
+		let products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 		products.forEach(product => {
 			if(product.id === idProduct) {
 				product.name = req.body.name;
@@ -70,6 +74,7 @@ const controller = {
 	// Delete - Delete one product from DB
 	destroy : (req, res) => {
 		let idProduct = parseInt(req.params.id);
+		let products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 		let productsUpdated = products.filter(i => i.id !== idProduct);
 		let productsUpdatedJSON = JSON.stringify(productsUpdated);
 		fs.writeFileSync(productsFilePath, productsUpdatedJSON);
