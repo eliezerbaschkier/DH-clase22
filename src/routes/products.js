@@ -10,7 +10,6 @@ const storage = multer.diskStorage({
     } ,
 
     filename: function(req, file, cb) {
-        console.log(file);
         const newFileName = 'product-' + Date.now() + path.extname(file.originalname);
         cb(null, newFileName);
     }
@@ -34,7 +33,7 @@ router.get('/:id', productsController.detail);
 
 /*** EDIT ONE PRODUCT ***/ 
 router.get('/edit/:id', productsController.edit); 
-router.put('/edit/:id', productsController.update); 
+router.put('/edit/:id', upload.single('product-image'), productsController.update); 
 
 
 /*** DELETE ONE PRODUCT***/ 

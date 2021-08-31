@@ -3,6 +3,8 @@ const path = require('path');
 const productsFilePath = path.join(__dirname, '../data/productsDataBase.json');
 
 const toThousand = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const dotToComma = n => n.toString().replace(/\./, ",");
+
 
 const controller = {
 	// Root - Show all products
@@ -18,7 +20,7 @@ const controller = {
 		let products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 		let product = products.filter(i => i.id === idProduct);
 		res.render('detail', {product: product,
-			toThousand: toThousand}); 
+			toThousand: toThousand, dotToComma: dotToComma}); 
 	},
 
 	// Create - Form to create
@@ -31,7 +33,7 @@ const controller = {
 		if (req.file) {
 			let products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
 			let newProduct = {
-				id: (products.length + 1),
+				id: Date.now(),
 				name: req.body.name,
 				price: req.body.price,
 				discount: req.body.discount,
@@ -67,6 +69,14 @@ const controller = {
 				product.discount = req.body.discount;
 				product.category = req.body.category;
 				product.description = req.body.description;
+				if (req.file) {
+					let indexProduct = products.findIndex(product => product.id === idProduct);
+					let imagePath = path.join(__dirname, '../../public/images/products', products[indexProduct].image);
+					fs.unlink(imagePath, function (err) {
+						if (err) throw err;
+					});
+					product.image = req.file.filename;
+				}
 			}
 		});
 		let productsJSON = JSON.stringify(products);
@@ -78,6 +88,12 @@ const controller = {
 	destroy : (req, res) => {
 		let idProduct = parseInt(req.params.id);
 		let products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
+		let indexProduct = products.findIndex(product => product.id === idProduct);
+		let imagePath = path.join(__dirname, '../../public/images/products', products[indexProduct].image);
+		fs.unlink(imagePath, function (err) {
+			if (err) throw err;
+			console.log('File deleted!');
+		});
 		let productsUpdated = products.filter(i => i.id !== idProduct);
 		let productsUpdatedJSON = JSON.stringify(productsUpdated);
 		fs.writeFileSync(productsFilePath, productsUpdatedJSON);
