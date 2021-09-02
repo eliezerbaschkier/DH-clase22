@@ -42,7 +42,7 @@ const controller = {
 				image: req.file.filename
 			};
 			products.push(newProduct);
-			let productsJSON = JSON.stringify(products);
+			let productsJSON = JSON.stringify(products, null, ' ');
 			fs.writeFileSync(productsFilePath, productsJSON);
 			res.redirect('/products'); 
 		} else {
@@ -79,7 +79,7 @@ const controller = {
 				}
 			}
 		});
-		let productsJSON = JSON.stringify(products);
+		let productsJSON = JSON.stringify(products, null, ' ');
 		fs.writeFileSync(productsFilePath, productsJSON);
 		res.redirect('/products');
 	},
@@ -95,7 +95,7 @@ const controller = {
 			console.log('File deleted!');
 		});
 		let productsUpdated = products.filter(i => i.id !== idProduct);
-		let productsUpdatedJSON = JSON.stringify(productsUpdated);
+		let productsUpdatedJSON = JSON.stringify(productsUpdated, null, ' ');
 		fs.writeFileSync(productsFilePath, productsUpdatedJSON);
 		res.redirect('/products');
 	}
